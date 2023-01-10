@@ -1,36 +1,33 @@
+import manager.Manager;
+import task.Epic;
+import task.SubTask;
+import task.Task;
+
+import java.util.ArrayList;
+
 public class Main {
 
     public static void main(String[] args) {
-        /*Manager manager = new Manager();
-        Task task = new Task(" Cool name", "Cool description");
-        manager.createTask(task);
-
-        Task task1 = new Task("Such a cool task name","Such a cool description too");
-        manager.createTask(task1);
-        manager.createSubTask(subTask);
-        System.out.println("Proverka " + subTask);
+        Manager manager = new Manager();
         Epic epic = new Epic(
-                "Epic name",
-                "Epic description", Status.NEW);
-        manager.createEpic(epic);
-        Epic epic1 = new Epic(
-                "Epic1 name",
-                "Epic1 description", Status.NEW);
-        manager.createEpic(epic1);
-        System.out.println(manager.getAllEpics());
-        SubTask subTask = new SubTask(
-                "Wow, I have just created a subtask",
-                "Subtask description",Status.DONE);
-        SubTask subTask1 = new SubTask(
-                "Proverka subtask",
-                "Proverka",Status.DONE);
-        manager.createSubTask(subTask,2);
-        manager.createSubTask(subTask1,2);
-        System.out.println(manager.getSubtasksList(2));
-        manager.countEpicStatus(2);
-        manager.deleteEpicById(1);
-        */
-
+                "name",
+                "description",
+                manager.generateId(), Task.Status.NEW,new ArrayList<>());
+                manager.createEpic(epic);
+        SubTask subtask = new SubTask(
+                "subtask name",
+                "subtask description",
+                manager.generateId(), Task.Status.NEW,1);
+                manager.createSubTask(subtask);
+        SubTask subtask1 = new SubTask(
+                "subtask1 name",
+                "subtask1 description",
+                manager.generateId(), Task.Status.DONE,1);
+                manager.createSubTask(subtask1);
+        System.out.println(epic);
+        manager.getAllTasks();
+        manager.getSubtaskByEpicId(1);
+        System.out.println(manager.getEpicById(1));
 
     }
 }
