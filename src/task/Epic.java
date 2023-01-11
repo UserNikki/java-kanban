@@ -2,19 +2,19 @@ package task;
 
 import task.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
 
-    private List<Integer> subTaskIdList;//инициализировать здесь как ты советовал не выходит
-                                        //буду благодарен, если подскажешь на будущее как инициализировать
-                                        //чтобы в конструкторе при создании инициализировался новый список
+    private List<Integer> subTaskIdList;
 
 
-    public Epic(String name, String description, int taskId, Status status, List<Integer> subTaskIdList) {
-        super(name, description, taskId, status);
+    public Epic(String name, String description,Status status, List<Integer> subTaskIdList) {
+        super(name, description,status);
         this.subTaskIdList = subTaskIdList;
     }
+
     @Override
     public int getTaskId() {
         return super.getTaskId();

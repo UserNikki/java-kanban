@@ -11,19 +11,17 @@ public class Task {
         DONE
     }
 
-    public Task(String name, String description, int taskId, Status status) {
+    public Task(String name, String description,Status status) {
         this.name = name;
         this.description = description;
-        this.taskId = taskId;
         this.status = status;
     }
 
     @Override
     public String toString() {
-        return "task.Task{" +
+        return "Task{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", taskId=" + taskId +
                 ", status=" + status +
                 '}';
     }
