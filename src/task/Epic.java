@@ -10,8 +10,8 @@ public class Epic extends Task {
     private List<Integer> subTaskIdList;
 
 
-    public Epic(int taskId, String name, String description,Status status, List<Integer> subTaskIdList) {
-        super(taskId, name, description, status);
+    public Epic(String name, String description,Status status, List<Integer> subTaskIdList) {
+        super(name, description, status);
         this.subTaskIdList = subTaskIdList;
     }
 
