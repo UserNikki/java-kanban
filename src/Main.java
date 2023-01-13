@@ -42,10 +42,10 @@ public class Main {
                 "subtask2 description",
                 Task.Status.DONE,6);
                 manager.createSubTask(subtask2);
-        System.out.println(manager.getAllEpics());//тут выводится с айди на первом месте, можно вставлять в методы ниже
+        System.out.println(manager.getAllEpics());
         System.out.println(manager.getAllTasks());
         System.out.println(manager.getAllSubtasks());
-        /*System.out.println(epic);
+        System.out.println(epic1);
         manager.displaySubtaskByEpicId(6);
         manager.deleteEpicById(6);
         System.out.println(manager.getEpicById(6));
@@ -56,6 +56,6 @@ public class Main {
         manager.deleteSubtaskById(4);
         System.out.println(manager.getAllEpics());
         System.out.println(manager.getAllTasks());
-        System.out.println(manager.getAllSubtasks());*/
+        System.out.println(manager.getAllSubtasks());
     }
 }

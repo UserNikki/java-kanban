@@ -11,18 +11,19 @@ public class Manager {
     private Map<Integer,Epic> epicMap = new HashMap<>();
     private Map<Integer, SubTask> subTaskMap = new HashMap<>();
     private int id = 1;
-    private int generateId () {
-        return id++;
-    }
 
     public Epic createEpic(Epic epic) {
+        int epicId = generateId();
+        epic.setTaskId(epicId);
         epic.setStatus(Task.Status.NEW);
-        epicMap.put(generateId(), epic);
+        epicMap.put(epicId, epic);
         return epic;
     }
 
     public SubTask createSubTask(SubTask subtask) {
-        subTaskMap.put(generateId(), subtask);
+        int subtaskId = generateId();
+        subtask.setTaskId(subtaskId);
+        subTaskMap.put(subtaskId, subtask);
             if (epicMap.containsKey(subtask.getEpicId())) {
                 for (Integer id : epicMap.keySet()) {
                         epicMap.get(id).setSubTaskIdList(subtask.getTaskId());
@@ -62,7 +63,9 @@ public class Manager {
     }
 
     public Task createTask(Task task) {
-        taskMap.put(generateId(), task);
+        int taskId = generateId();
+        task.setTaskId(taskId);
+        taskMap.put(taskId, task);
         return task;
     }
 
@@ -93,15 +96,15 @@ public class Manager {
     }
 
     public String getAllTasks() {
-        return taskMap.entrySet().toString();
+        return taskMap.values().toString();
     }
 
     public String getAllEpics() {
-        return epicMap.entrySet().toString();
+        return epicMap.values().toString();
     }
 
     public String getAllSubtasks() {
-        return subTaskMap.entrySet().toString();
+        return subTaskMap.values().toString();
     }
 
     public void displaySubtaskByEpicId(int epicId) {
@@ -146,6 +149,9 @@ public class Manager {
         subTaskMap.put(subtaskId, subtask);
         countEpicStatus(subtask.getEpicId());
         return subtask;
+    }
+    private int generateId () {
+        return id++;
     }
 
 }

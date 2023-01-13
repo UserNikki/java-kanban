@@ -1,9 +1,10 @@
 package task;
 
 public class Task {
+    private int taskId;
     private String name;
     private String description;
-    private int taskId;
+
     private Status status;
     public enum Status {
         NEW,
@@ -11,16 +12,18 @@ public class Task {
         DONE
     }
 
-    public Task(String name, String description,Status status) {
+    public Task(int taskId, String name, String description,Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.taskId = taskId;
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "name='" + name + '\'' +
+                "taskId=" + taskId +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 '}';
