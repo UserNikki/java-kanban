@@ -1,6 +1,5 @@
-import manager.Manager;
+import manager.InMemoryTaskManager;
 import task.Epic;
-import task.SubTask;
 import task.Task;
 
 import java.util.ArrayList;
@@ -8,21 +7,24 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
-        Manager manager = new Manager();
-        Task task = new Task(
+        //Из формулировок задания ничего не понял что от меня нужно если честно. Надеюсь на спасительное ревью))
+        //Уже ничего не пойму, не хочу еще день потратить, уж извини за наглость
+        InMemoryTaskManager manager = new InMemoryTaskManager();
+        /*Task task = new Task(
                 "Task name",
                 "Task description", Task.Status.NEW);
                 manager.createTask(task);
         Task task1 = new Task(
                 "Task1 name",
                 "Task1 description", Task.Status.NEW);
-                manager.createTask(task1);
+                manager.createTask(task1);*/
         Epic epic = new Epic(
                 "name Epic",
                 "description Epic",
-                Task.Status.NEW,new ArrayList<>());
-                manager.createEpic(epic);
-        SubTask subtask = new SubTask(
+                Task.Status.NEW, new ArrayList<>());
+        manager.createEpic(epic);
+        System.out.println(manager.getHistory());
+        /*SubTask subtask = new SubTask(
                 "subtask name",
                 "subtask description",
                 Task.Status.NEW,3);
@@ -57,5 +59,6 @@ public class Main {
         System.out.println(manager.getAllEpics());
         System.out.println(manager.getAllTasks());
         System.out.println(manager.getAllSubtasks());
+    }*/
     }
 }
