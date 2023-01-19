@@ -9,8 +9,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private List <Task> history;
 
-    private static final int MAX_HISTORY_SIZE = 10;
-
     public InMemoryHistoryManager() {
         this.history = new ArrayList<>();
     }

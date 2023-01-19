@@ -150,6 +150,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic getEpicById(int epicId) {
         if (history.getHistory().size() >= MAX_HISTORY_SIZE) {
             history.getHistory().add(0, epicMap.get(epicId));
+            history.getHistory().remove(MAX_HISTORY_SIZE);
         }
         else {
             history.add(epicMap.get(epicId));
@@ -161,6 +162,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskById(int taskId) {
         if (history.getHistory().size() >= MAX_HISTORY_SIZE) {
             history.getHistory().add(0, taskMap.get(taskId));
+            history.getHistory().remove(MAX_HISTORY_SIZE);
         }
         else {
             history.add(taskMap.get(taskId));
@@ -172,6 +174,7 @@ public class InMemoryTaskManager implements TaskManager {
     public SubTask getSubtaskById(int subtaskId) {
         if (history.getHistory().size() >= MAX_HISTORY_SIZE) {
             history.getHistory().add(0, subTaskMap.get(subtaskId));
+            history.getHistory().remove(MAX_HISTORY_SIZE);
         }
         else {
             history.add(subTaskMap.get(subtaskId));

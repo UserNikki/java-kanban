@@ -58,10 +58,7 @@ public class Main {
                 "Task name",
                 "Task description", Task.Status.NEW);
         manager.createTask(task4);
-        Task task5 = new Task(
-                "Проверка удаления 11 элемента",
-                "Должен встать в 0 индекс", Task.Status.NEW);
-        manager.createTask(task5);
+
         manager.getTaskById(1);
         manager.getTaskById(2);
         manager.getEpicById(3);
@@ -72,6 +69,10 @@ public class Main {
         manager.getEpicById(8);
         manager.getTaskById(9);
         manager.getTaskById(10);
+        Task task5 = new Task(
+                "Проверка удаления 11 элемента",
+                "Должен встать в 0 индекс", Task.Status.NEW);
+        manager.createTask(task5);
         manager.getTaskById(11);
         System.out.println(manager.getHistory());
     }
