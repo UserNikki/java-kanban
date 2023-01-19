@@ -10,7 +10,18 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer,Epic> epicMap = new HashMap<>();
     private Map<Integer, SubTask> subTaskMap = new HashMap<>();
     private int id = 1;
+    private static final int MAX_HISTORY_SIZE = 10;
 
+    private final HistoryManager history = Managers.getDefaultHistory();
+
+    /*public InMemoryTaskManager() {
+        this.history = Managers.getDefaultHistory();
+    }*/
+
+    @Override
+    public HistoryManager getHistory() {
+        return history;
+    }
 
     @Override
     public Epic createEpic(Epic epic) {
@@ -18,7 +29,6 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setTaskId(epicId);
         epic.setStatus(Task.Status.NEW);
         epicMap.put(epicId, epic);
-        history.add(epic);
         return epic;
     }
 
@@ -40,7 +50,6 @@ public class InMemoryTaskManager implements TaskManager {
         return subtask;
     }
 
-    @Override
     public void countEpicStatus(int epicId) {
         boolean isDone = false;
         boolean isNew = false;
@@ -139,16 +148,34 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpicById(int epicId) {
+        if (history.getHistory().size() >= MAX_HISTORY_SIZE) {
+            history.getHistory().add(0, epicMap.get(epicId));
+        }
+        else {
+            history.add(epicMap.get(epicId));
+        }
         return epicMap.get(epicId);
     }
 
     @Override
     public Task getTaskById(int taskId) {
+        if (history.getHistory().size() >= MAX_HISTORY_SIZE) {
+            history.getHistory().add(0, taskMap.get(taskId));
+        }
+        else {
+            history.add(taskMap.get(taskId));
+        }
         return taskMap.get(taskId);
     }
 
     @Override
     public SubTask getSubtaskById(int subtaskId) {
+        if (history.getHistory().size() >= MAX_HISTORY_SIZE) {
+            history.getHistory().add(0, subTaskMap.get(subtaskId));
+        }
+        else {
+            history.add(subTaskMap.get(subtaskId));
+        }
         return subTaskMap.get(subtaskId);
     }
 
@@ -174,5 +201,8 @@ public class InMemoryTaskManager implements TaskManager {
     private int generateId () {
         return id++;
     }
+
+
+
 
 }

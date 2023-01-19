@@ -9,17 +9,27 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private List <Task> history;
 
-    public InMemoryHistoryManager(List<Task> history) {
-        this.history = history;
+    private static final int MAX_HISTORY_SIZE = 10;
+
+    public InMemoryHistoryManager() {
+        this.history = new ArrayList<>();
     }
+
 
     @Override
     public List<Task> getHistory() {
         return history;
-    }
+        }
+
     @Override
     public void add(Task task)  {
         history.add(task);
     }
 
+    @Override
+    public String toString() {
+        return "InMemoryHistoryManager{" +
+                "history=" + history +
+                '}';
+    }
 }
