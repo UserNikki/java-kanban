@@ -1,6 +1,5 @@
 import manager.InMemoryTaskManager;
 import task.Epic;
-import task.SubTask;
 import task.Task;
 
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ public class Main {
                 "description epic1",
                 Task.Status.NEW,new ArrayList<>());
         manager.createEpic(epic1);
-        System.out.println(manager.getHistory());
         Epic epic2 = new Epic(
                 "name Epic2",
                 "description epic1",
@@ -55,7 +53,7 @@ public class Main {
                 "Task description", Task.Status.NEW);
         manager.createTask(task3);
         Task task4 = new Task(
-                "Task name",
+                "Task4 name",
                 "Task description", Task.Status.NEW);
         manager.createTask(task4);
 
@@ -66,12 +64,13 @@ public class Main {
         manager.getEpicById(5);
         manager.getEpicById(6);
         manager.getEpicById(7);
+        System.out.println(manager.getHistory());
         manager.getEpicById(8);
         manager.getTaskById(9);
         manager.getTaskById(10);
         Task task5 = new Task(
-                "Проверка удаления 11 элемента",
-                "Должен встать в 0 индекс", Task.Status.NEW);
+                "11 element",
+                "Проверка удаления", Task.Status.NEW);
         manager.createTask(task5);
         manager.getTaskById(11);
         System.out.println(manager.getHistory());

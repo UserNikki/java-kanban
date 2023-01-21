@@ -21,7 +21,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "\nTask{" +
                 "taskId=" + taskId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

@@ -10,17 +10,11 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer,Epic> epicMap = new HashMap<>();
     private Map<Integer, SubTask> subTaskMap = new HashMap<>();
     private int id = 1;
-    private static final int MAX_HISTORY_SIZE = 10;
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    private final HistoryManager history = Managers.getDefaultHistory();
 
-    /*public InMemoryTaskManager() {
-        this.history = Managers.getDefaultHistory();
-    }*/
-
-    @Override
     public HistoryManager getHistory() {
-        return history;
+         return historyManager;
     }
 
     @Override
@@ -148,37 +142,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpicById(int epicId) {
-        if (history.getHistory().size() >= MAX_HISTORY_SIZE) {
-            history.getHistory().add(0, epicMap.get(epicId));
-            history.getHistory().remove(MAX_HISTORY_SIZE);
-        }
-        else {
-            history.add(epicMap.get(epicId));
-        }
+        historyManager.add(epicMap.get(epicId));
         return epicMap.get(epicId);
     }
 
     @Override
     public Task getTaskById(int taskId) {
-        if (history.getHistory().size() >= MAX_HISTORY_SIZE) {
-            history.getHistory().add(0, taskMap.get(taskId));
-            history.getHistory().remove(MAX_HISTORY_SIZE);
-        }
-        else {
-            history.add(taskMap.get(taskId));
-        }
+        historyManager.add(taskMap.get(taskId));
         return taskMap.get(taskId);
     }
 
     @Override
     public SubTask getSubtaskById(int subtaskId) {
-        if (history.getHistory().size() >= MAX_HISTORY_SIZE) {
-            history.getHistory().add(0, subTaskMap.get(subtaskId));
-            history.getHistory().remove(MAX_HISTORY_SIZE);
-        }
-        else {
-            history.add(subTaskMap.get(subtaskId));
-        }
+        historyManager.add(subTaskMap.get(subtaskId));
         return subTaskMap.get(subtaskId);
     }
 
