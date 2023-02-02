@@ -37,7 +37,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         else {
-            System.out.println("task.Epic does not exist...");
+            System.out.println("Epic does not exist...");
         }
         countEpicStatus(subtask.getEpicId());
 
