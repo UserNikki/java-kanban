@@ -1,5 +1,6 @@
 package manager;
 import task.Epic;
+import task.Node;
 import task.SubTask;
 import task.Task;
 
@@ -11,6 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer, SubTask> subTaskMap = new HashMap<>();
     private int id = 1;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
+
 
 
     public HistoryManager getHistory() {
@@ -96,17 +98,25 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTaskById(int id) {
         taskMap.remove(id);
+        getHistory().remove(id);
     }
 
     @Override
     public void deleteEpicById(int id) {
+        for (SubTask subtask : subTaskMap.values()) {
+            if (subtask.getEpicId() == id) {
+                getHistory().remove(subtask.getTaskId());
+            }
+        }
         epicMap.remove(id);
         subTaskMap.values().removeIf(value -> value.getEpicId() == id);
+        getHistory().remove(id);
     }
 
     @Override
     public void deleteSubtaskById(int id) {
         subTaskMap.remove(id);
+        getHistory().remove(id);
     }
 
     @Override
@@ -136,7 +146,7 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println(subtask);
         }
         if (subtasksList.isEmpty()) {
-            System.out.println("task.Epic does not exist or contain any subtasks...");
+            System.out.println("Epic does not exist or contain any subtasks...");
         }
     }
 
@@ -180,7 +190,6 @@ public class InMemoryTaskManager implements TaskManager {
     private int generateId () {
         return id++;
     }
-
 
 
 

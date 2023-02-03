@@ -8,7 +8,7 @@ public class Node<T> {
     public Node<T> next;
     public Node<T> prev;
 
-    public Node(Node<T> prev, T data,Node<T> next) {
+    public Node(Node<T> prev, T data, Node<T> next) {
         this.data = data;
         this.next = next;
         this.prev = prev;
@@ -19,9 +19,7 @@ public class Node<T> {
     }
 
     @Override
-    public String toString() {//если не затруднит, объясни почему при реализации этого метода
-        return "\nNode{" + //со всеми полями класса вылетает steakoverflowerror
-                "data=" + data +
-                '}';
+    public String toString() {
+        return "\n" + data;
     }
 }

@@ -21,12 +21,12 @@ public class Task {
 
     @Override
     public String toString() {
-        return "\nTask{" +
+        return "Task{" +
                 "taskId=" + taskId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                '}';
+                "}";
     }
 
     public String getName() {

@@ -1,6 +1,7 @@
 import manager.HistoryManager;
 import manager.InMemoryHistoryManager;
 import manager.InMemoryTaskManager;
+import manager.TaskManager;
 import task.Epic;
 import task.SubTask;
 import task.Task;
@@ -32,12 +33,25 @@ public class Main {
         manager.getTaskById(1);
         manager.getTaskById(2);
         manager.getEpicById(3);
+        System.out.println(manager.getHistory());
         manager.getEpicById(4);
         manager.getSubtaskById(5);
         manager.getSubtaskById(6);
+        System.out.println(manager.getHistory());
         manager.getSubtaskById(7);
         manager.getTaskById(1);
         System.out.println(manager.getHistory());
+
+        manager.deleteTaskById(1);
+        System.out.println(manager.getHistory());
+        manager.deleteEpicById(3);
+        System.out.println(manager.getHistory());
+
+
+
+
+
+
 
 
     }
