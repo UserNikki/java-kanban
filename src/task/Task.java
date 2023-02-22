@@ -2,31 +2,35 @@ package task;
 
 public class Task {
     private int taskId;
+    private Type type;
     private String name;
     private String description;
-
     private Status status;
+
+    public enum Type {
+        TASK,
+        EPIC,
+        SUBTASK
+    }
     public enum Status {
         NEW,
         IN_PROGRESS,
         DONE
     }
 
-    public Task(String name, String description,Status status) {
+    public Task(Type type, String name, String description,Status status) {
+        this.type = type;
         this.name = name;
         this.description = description;
         this.status = status;
-
     }
-
     @Override
     public String toString() {
-        return "Task{" +
-                "taskId=" + taskId +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                "}";
+        return taskId +
+                     "," +type +
+                     "," + name +
+                     "," + description +
+                     "," + status;
     }
 
     public String getName() {
@@ -59,5 +63,13 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }

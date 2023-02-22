@@ -4,20 +4,22 @@ import task.Node;
 import task.SubTask;
 import task.Task;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private Map<Integer,Task> taskMap = new HashMap<>();
-    private Map<Integer,Epic> epicMap = new HashMap<>();
-    private Map<Integer, SubTask> subTaskMap = new HashMap<>();
+    protected Map<Integer,Task> taskMap = new HashMap<>();
+    protected Map<Integer,Epic> epicMap = new HashMap<>();
+    protected Map<Integer, SubTask> subTaskMap = new HashMap<>();
     private int id = 1;
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
-
-
-
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
     public HistoryManager getHistory() {
          return historyManager;
     }
+
+
 
     @Override
     public Epic createEpic(Epic epic) {
@@ -191,6 +193,12 @@ public class InMemoryTaskManager implements TaskManager {
         return id++;
     }
 
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
 }

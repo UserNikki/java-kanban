@@ -10,8 +10,8 @@ public class Epic extends Task {
     private List<Integer> subTaskIdList;
 
 
-    public Epic(String name, String description,Status status, List<Integer> subTaskIdList) {
-        super(name, description, status);
+    public Epic(Type type, String name, String description,Status status, List<Integer> subTaskIdList) {
+        super(type, name, description, status);
         this.subTaskIdList = subTaskIdList;
     }
 
@@ -40,8 +40,7 @@ public class Epic extends Task {
     @Override
     public String toString() {
         return super.toString() +
-                "subTaskIdList=" + subTaskIdList.size() +
-                '}';
+                ",";
     }
 
     @Override

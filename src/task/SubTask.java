@@ -6,16 +6,15 @@ public class SubTask extends Task {
 
 private int epicId;
 
-    public SubTask(String name, String description, Status status, int epicId) {
-        super(name, description, status);
+    public SubTask(Type type, String name, String description, Status status, int epicId) {
+        super(type, name, description, status);
         this.epicId = epicId;
     }
 
     @Override
     public String toString() {
         return super.toString() +
-                "epicId=" + epicId +
-                '}';
+                "," + epicId;
     }
 
     @Override
