@@ -13,17 +13,9 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        //ПРИВЕТ. НЕ СОВСЕМ ПОНЯЛ ПРО СОЗДАТЬ МЭЙН В ДРУГОМ КЛАССЕ.IDE ГОВОРИТ МЭЙН ДОЛЖЕН БЫТЬ В КЛАССЕ МЭЙН
-        //ЗАПИСАТЬ С ОТСТУПОМ 2 СТРОКИ НЕ ПРОБЛЕМА. А ВОТ СЧИТАТЬ ОКАЗАЛОСЬ ПРОБЛЕМА))
-        //ПОДСКАЖИ ПОЖАЛУЙСТА КАК ЭТО СДЕЛАТЬ. НАТЫКАЯСЬ НА ПРОПУСК ВЫХОДИТ ЭТО:
-        //Exception in thread "main" java.lang.NumberFormatException: For input string: ""
-        //ВЕСЬ ДЕНЬ ПОЧТИ ПОТРАТИЛ НА ПОПЫТКИ ЕГО ИГНОРИРОВАТЬ И ПРОПУСКАТЬ
-        //НАУЧИ КАК ЭТО СДЕЛАТЬ. ОБРАБОТКА NumberFormatException НЕ ПОМОГЛА
-        //ДА И БУФЕРЕДРИДЕР НАВЕРНОЕ ПЕРЕСТАЕТ БЫТЬ ISrEADY() И СТРОКУ ЧИТАТЬ КАК НА ПРОПУСК НАТЫКАЕТСЯ
-
-        FileBackedTasksManager fileman =new FileBackedTasksManager(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\alltasks.csv"));
+        FileBackedTasksManager fileman =new FileBackedTasksManager(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\src\\data.csv"));
         InMemoryTaskManager manager = new InMemoryTaskManager();
-        TaskManager taskManager = new FileBackedTasksManager(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\alltasks.csv"));
+        TaskManager taskManager = new FileBackedTasksManager(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\src\\data.csv"));
 
         /*Task task = new Task(Task.Type.TASK,"Task name", "Task description", Task.Status.NEW);
         taskManager.createTask(task);
@@ -46,11 +38,11 @@ public class Main {
         taskManager.getSubtaskById(6);
         System.out.println(taskManager.getHistory());*/
 
-        /*fileman.loadFromFile(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\alltasks.csv"));
+        fileman.loadFromFile(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\src\\data.csv"));
         System.out.println(fileman.getHistory());
         System.out.println(fileman.getAllTasks());
         System.out.println(fileman.getAllEpics());
-        System.out.println(fileman.getAllSubtasks());*/
+        System.out.println(fileman.getAllSubtasks());
 
     }
 
