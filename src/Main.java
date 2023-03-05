@@ -9,11 +9,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static manager.FileBackedTasksManager.loadFromFile;
+
 public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        FileBackedTasksManager fileman =new FileBackedTasksManager(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\src\\data.csv"));
+        //FileBackedTasksManager fileman =new FileBackedTasksManager(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\src\\data.csv"));
         InMemoryTaskManager manager = new InMemoryTaskManager();
         TaskManager taskManager = new FileBackedTasksManager(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\src\\data.csv"));
 
@@ -38,13 +40,15 @@ public class Main {
         taskManager.getSubtaskById(6);
         System.out.println(taskManager.getHistory());*/
 
-        fileman.loadFromFile(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\src\\data.csv"));
+        /*FileBackedTasksManager fileman = loadFromFile(new File("C:\\Users\\Пользователь\\dev\\java-kanban\\src\\data.csv"));
+
         System.out.println(fileman.getHistory());
         System.out.println(fileman.getAllTasks());
         System.out.println(fileman.getAllEpics());
-        System.out.println(fileman.getAllSubtasks());
+        System.out.println(fileman.getAllSubtasks());*/
+        }
 
     }
 
-}
+
 
