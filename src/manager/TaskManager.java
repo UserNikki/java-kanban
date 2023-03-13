@@ -32,7 +32,7 @@ public interface TaskManager {
 
      String getAllSubtasks();
 
-     void displaySubtaskByEpicId(int epicId);
+     String displaySubtaskByEpicId(int epicId);
 
      Epic getEpicById(int epicId);
 

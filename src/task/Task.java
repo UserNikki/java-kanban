@@ -1,11 +1,17 @@
 package task;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Task {
     private int taskId;
     private Type type;
     private String name;
     private String description;
     private Status status;
+    private long duration;
+    private LocalDateTime startTime;
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy/HH:mm");
 
     public enum Type {
         TASK,
@@ -18,11 +24,13 @@ public class Task {
         DONE
     }
 
-    public Task(Type type, String name, String description,Status status) {
+    public Task(Type type, String name, String description,Status status,long duration,String startTime) {
         this.type = type;
         this.name = name;
         this.description = description;
         this.status = status;
+        this.duration = duration;
+        this.startTime = LocalDateTime.parse(startTime,DATE_TIME_FORMATTER);
     }
     @Override
     public String toString() {
@@ -30,7 +38,13 @@ public class Task {
                      "," +type +
                      "," + name +
                      "," + description +
-                     "," + status;
+                     "," + status +
+                     "," + duration +
+                     "," + startTime.format(DATE_TIME_FORMATTER);
+    }
+
+    public LocalDateTime getEndTime() {
+        return getStartTime().plusMinutes(getDuration());
     }
 
     public String getName() {
@@ -71,5 +85,21 @@ public class Task {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 }

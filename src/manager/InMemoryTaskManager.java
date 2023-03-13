@@ -7,12 +7,16 @@ import task.Task;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer,Task> taskMap = new HashMap<>();
     protected Map<Integer,Epic> epicMap = new HashMap<>();
     protected Map<Integer, SubTask> subTaskMap = new HashMap<>();
+    private final Comparator<Task> comparator = Comparator.comparing(Task::getStartTime);
+    protected Set<Task> taskSet = new TreeSet<>(comparator);
     private int id = 1;
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
     public HistoryManager getHistory() {
@@ -23,28 +27,39 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic createEpic(Epic epic) {
-        int epicId = generateId();
-        epic.setTaskId(epicId);
-        epic.setStatus(Task.Status.NEW);
-        epicMap.put(epicId, epic);
+        if (timeValidator(epic)) {
+            int epicId = generateId();
+                epic.setTaskId(epicId);
+                    epic.setStatus(Task.Status.NEW);
+                        epicMap.put(epicId, epic);
+                            countEpicEndTime(epic.getTaskId());
+                                taskSet.add(epic);
+                            } else {
+                        System.out.println("Указанное время начала совпадает с уже существующей задачей");
+                        }
         return epic;
     }
 
     @Override
     public SubTask createSubTask(SubTask subtask) {
-        int subtaskId = generateId();
-        subtask.setTaskId(subtaskId);
-        subTaskMap.put(subtaskId, subtask);
+        if (timeValidator(subtask)) {
+            int subtaskId = generateId();
+                subtask.setTaskId(subtaskId);
+                    subTaskMap.put(subtaskId, subtask);
+                        taskSet.add(subtask);
         if (epicMap.containsKey(subtask.getEpicId())) {
-            for (Integer id : epicMap.keySet()) {
-                epicMap.get(id).setSubTaskIdList(subtask.getTaskId());
-            }
+            epicMap.get(subtask.getEpicId()).setSubTaskIdList(subtask.getTaskId());
+                countEpicStatus(subtask.getEpicId());
+                    countEpicDuration(subtask.getEpicId());
+                        countEpicStartTime(subtask.getEpicId());
+                            countEpicEndTime(subtask.getEpicId());
+        } else {
+            System.out.println("Epic does not exist");
         }
+    }
         else {
-            System.out.println("Epic does not exist...");
+            System.out.println("Указанное время начала совпадает с уже существующей задачей");
         }
-        countEpicStatus(subtask.getEpicId());
-
         return subtask;
     }
 
@@ -71,14 +86,66 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
         }
+
     }
 
     @Override
     public Task createTask(Task task) {
-        int taskId = generateId();
-        task.setTaskId(taskId);
-        taskMap.put(taskId, task);
+        if (timeValidator(task)) {
+            int taskId = generateId();
+                task.setTaskId(taskId);
+                    taskMap.put(taskId, task);
+                        taskSet.add(task);
+        }
+        else {
+            System.out.println("Указанное время начала совпадает с уже существующей задачей");
+        }
         return task;
+    }
+
+    public void countEpicDuration(int id) {
+       List<Integer> list = epicMap.get(id).getSubTaskIdList();
+       long duration = 0;
+        for (Integer i : list) {
+            duration += subTaskMap.get(i).getDuration();
+        }
+        epicMap.get(id).setDuration(duration);
+    }
+
+    public void countEpicStartTime(int id) {
+        List <LocalDateTime> startTime = new ArrayList<>();
+        List<Integer> list = epicMap.get(id).getSubTaskIdList();
+        for (Integer i : list) {
+            startTime.add(subTaskMap.get(i).getStartTime());
+        }
+        epicMap.get(id).setStartTime(startTime.stream()
+               .filter(Objects::nonNull)
+               .min(Comparator.naturalOrder()).get());
+    }
+
+    public void countEpicEndTime(int id) {
+        if (epicMap.get(id).getSubTaskIdList().isEmpty()) {
+            long duration = epicMap.get(id).getDuration();
+            LocalDateTime endTime = epicMap.get(id).getStartTime().plusMinutes(duration);
+            epicMap.get(id).setEndTimeForEpic(endTime);
+        } else {
+            List<SubTask> subTasks = new ArrayList<>();
+            List<Integer> list = epicMap.get(id).getSubTaskIdList();
+            for (Integer i : list) {
+                subTasks.add(subTaskMap.get(i));
+            }
+            epicMap.get(id).setEndTimeForEpic(subTasks.stream()
+                    .filter(Objects::nonNull).map(Task::getEndTime)
+                    .max(Comparator.naturalOrder()).get());
+        }
+        /*List <LocalDateTime> endTime = new ArrayList<>();
+        List<Integer> list = epicMap.get(id).getSubTaskIdList();
+        for (Integer i : list) {
+            endTime.add(subTaskMap.get(i).getEndTime());
+        }
+        epicMap.get(id).setEndTimeForEpic(endTime.stream()
+                .filter(Objects::nonNull)
+                .max(Comparator.naturalOrder()).get());*/
     }
 
     @Override
@@ -137,19 +204,17 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void displaySubtaskByEpicId(int epicId) {
+    public String displaySubtaskByEpicId(int epicId) {
         ArrayList <SubTask> subtasksList = new ArrayList<>();
         for (SubTask subtask : subTaskMap.values()) {
             if (subtask.getEpicId() == epicId) {
                 subtasksList.add(subtask);
             }
         }
-        for (SubTask subtask : subtasksList) {
-            System.out.println(subtask);
-        }
         if (subtasksList.isEmpty()) {
             System.out.println("Epic does not exist or contain any subtasks...");
         }
+        return subtasksList.toString();
     }
 
     @Override
@@ -172,22 +237,54 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task updateTask(int taskId, Task task) {
+        taskSet.remove(taskMap.get(taskId));
         taskMap.put(taskId, task);
+        taskSet.add(task);
         return task;
     }
 
     @Override
     public Epic updateEpic(int epicId, Epic epic) {
+        taskSet.remove(epicMap.get(epicId));
         epicMap.put(epicId, epic);
         countEpicStatus(epicId);
+        taskSet.add(epicMap.get(epicId));
         return epic;
     }
 
     @Override
     public SubTask updateSubtask(int subtaskId, SubTask subtask) {
+        taskSet.remove(subTaskMap.get(subtaskId));
         subTaskMap.put(subtaskId, subtask);
         countEpicStatus(subtask.getEpicId());
+        taskSet.add(subtask);
         return subtask;
+    }
+
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(taskSet);
+    }
+    public boolean timeValidator(Task task) {
+        boolean isValid = true;
+        LocalDateTime start = task.getStartTime();
+        for (Task taskToCompareWith  : taskMap.values()) {
+            if (start.isAfter(taskToCompareWith.getStartTime())
+                    && start.isBefore(taskToCompareWith.getEndTime())) {
+                        isValid = false;
+            }
+        }
+        for (Task taskToCompareWith  : subTaskMap.values()) {
+            if (start.isAfter(taskToCompareWith.getStartTime())
+                    && start.isBefore(taskToCompareWith.getEndTime())) {
+                        isValid = false;
+            }
+        }
+        for (Epic taskToCompareWith  : epicMap.values()) {
+            if (start.isAfter(taskToCompareWith.getStartTime())
+                    && start.isBefore(taskToCompareWith.getEndTimeForEpic())) {
+                        isValid = false;
+            }
+        }   return isValid;
     }
     private int generateId () {
         return id++;

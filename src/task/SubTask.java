@@ -1,13 +1,15 @@
 package task;
 
+import manager.InMemoryTaskManager;
 import task.Task;
 
 public class SubTask extends Task {
 
 private int epicId;
 
-    public SubTask(Type type, String name, String description, Status status, int epicId) {
-        super(type, name, description, status);
+    public SubTask(Type type, String name, String description, Status status,
+                   long duration, String startTime, int epicId) {
+        super(type, name, description, status, duration, startTime);
         this.epicId = epicId;
     }
 
