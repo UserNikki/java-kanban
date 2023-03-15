@@ -1,7 +1,7 @@
-package manager.tests;
+package test.managers;
 
 import manager.FileBackedTasksManager;
-import manager.InMemoryTaskManager;
+import manager.HistoryManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Epic;
@@ -14,9 +14,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
-//Привет. Не понял про граничные условия для записи в файл
-    //у нас заданиями и реализацией не предусмотрена какая-либо разница в записи в файл для эпика с задачами и без задач
     FileBackedTasksManager manager;
+    protected HistoryManager historyManager;
     private static final String PATH = "src/data.csv" ;
     protected Task task;
     protected Epic epic;
@@ -25,6 +24,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
     @BeforeEach
     @Override
     void createTestData() {
+        this.historyManager = manager.getHistory();
         this.manager = new FileBackedTasksManager(new File(PATH));
         this.task = manager.createTask(new Task
                 (Task.Type.TASK,"FileBackedTasksManager","Task test",
@@ -45,6 +45,14 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         assertEquals(testManager.getEpicById(2).toString(), epic.toString(), "эпики не равны");
         assertEquals(testManager.getSubtaskById(3).toString(), subtask.toString(), "сабтаски не равны");
 //я так понимаю, что в данном случае проверяется одновременно и сохранение и загрузка обратно
+        //если я просто удалю задачи, негде будет срабатывать методу save(). Пустым файл никак не станет,
+        //останется лишь состояние на момент последнего срабатывания save() поэтому тест с пустой записью опускаю
+    }
+
+    @Test
+    void mustNotSaveToFileTest() {
+
+
     }
 
     @Override
@@ -126,35 +134,108 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
     }
 
     @Override
+    @Test
     void mustUpdateTaskTest() {
         super.mustUpdateTaskTest();
     }
 
     @Override
+    @Test
     void mustUpdateEpicTest() {
         super.mustUpdateEpicTest();
     }
 
     @Override
+    @Test
     void mustUpdateSubtaskTest() {
         super.mustUpdateSubtaskTest();
     }
 
     @Override
+    @Test
     void mustGetTaskByIdTest() {
         super.mustGetTaskByIdTest();
     }
 
     @Override
+    @Test
     void mustGetEpicByIdTest() {
         super.mustGetEpicByIdTest();
     }
 
     @Override
+    @Test
     void mustGetSubtaskByIdTest() {
         super.mustGetSubtaskByIdTest();
     }
 
+    @Test
+    void mustReturnHistoryAsListTest() {
+        manager.getTaskById(1);
+        manager.getEpicById(2);
+        manager.getSubtaskById(3);
+        List<Task> historyListForTest = manager.getHistory().getHistory();
+        assertEquals(historyListForTest.size(), historyManager.getHistory().size());
+        assertArrayEquals(historyListForTest.toArray(),historyManager.getHistory().toArray());
+        assertNotNull(historyListForTest);
+    }
 
+    @Test
+    void mustReturnEmptyHistoryListTest() {
+        List<Task> historyListForTest = manager.getHistory().getHistory();
+        assertEquals(historyListForTest.size(), historyManager.getHistory().size());
+        assertArrayEquals(historyListForTest.toArray(),historyManager.getHistory().toArray());
+    }
+    @Test
+    void mustAddElementToHistoryTest() {
+        historyManager.add(task);
+        assertEquals(task, historyManager.getHistory().get(0),"different Test.Test.test.tasks");
+    }
+
+    @Test
+    void mustRemove1stElementFromHistoryTest() {
+        historyManager.add(task);
+        historyManager.add(epic);
+        historyManager.add(subtask);
+        int index = historyManager.getHistory().indexOf(task);
+        historyManager.remove(task.getTaskId());
+        assertNotEquals(historyManager.getHistory().get(index), task);
+        assertNotNull(historyManager.getHistory().get(index));
+        index = historyManager.getHistory().indexOf(epic);
+        historyManager.remove(task.getTaskId());
+        assertNotEquals(historyManager.getHistory().get(index), task);
+
+    }
+    @Test
+    void mustRemove2ndElementFromHistoryTest() {
+        historyManager.add(task);
+        historyManager.add(epic);
+        historyManager.add(subtask);
+        int index = historyManager.getHistory().indexOf(epic);
+        historyManager.remove(epic.getTaskId());
+        assertNotEquals(historyManager.getHistory().get(index), task);
+        assertNotNull(historyManager.getHistory().get(index));
+    }
+    @Test
+    void mustRemoveThirdElementFromHistoryTest() {
+        historyManager.add(task);
+        historyManager.add(epic);
+        historyManager.add(subtask);
+        int index = historyManager.getHistory().indexOf(subtask);
+        historyManager.remove(subtask.getTaskId());
+        assertNotEquals(historyManager.getHistory().get(index), task);
+        assertNotNull(historyManager.getHistory().get(index));
+    }
+
+    @Test
+    void shouldNotHaveCreatedDuplicateHistoryTest() {
+        manager.getTaskById(1);
+        manager.getEpicById(2);
+        manager.getSubtaskById(3);
+        int size = historyManager.getHistory().size();
+        assertEquals(historyManager.getHistory().size(), size);
+        manager.getTaskById(1);
+        assertEquals(historyManager.getHistory().size(), size);
+    }
 
 }

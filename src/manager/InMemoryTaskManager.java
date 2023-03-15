@@ -50,8 +50,8 @@ public class InMemoryTaskManager implements TaskManager {
         if (epicMap.containsKey(subtask.getEpicId())) {
             epicMap.get(subtask.getEpicId()).setSubTaskIdList(subtask.getTaskId());
                 countEpicStatus(subtask.getEpicId());
-                    countEpicDuration(subtask.getEpicId());
-                        countEpicStartTime(subtask.getEpicId());
+                    countEpicStartTime(subtask.getEpicId());
+                        countEpicDuration(subtask.getEpicId());
                             countEpicEndTime(subtask.getEpicId());
         } else {
             System.out.println("Epic does not exist");
@@ -63,7 +63,7 @@ public class InMemoryTaskManager implements TaskManager {
         return subtask;
     }
 
-    public void countEpicStatus(int epicId) {
+    private void countEpicStatus(int epicId) {
         boolean isDone = false;
         boolean isNew = false;
         for (SubTask subtask : subTaskMap.values()) {

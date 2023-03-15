@@ -23,7 +23,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Epic epic = new Epic
                 (Task.Type.EPIC,"name Epic", "description Epic", Task.Status.NEW,90,"20/03/2023/07:00");
         SubTask subTask = new SubTask
-                (Task.Type.SUBTASK,"Subtask","description", Task.Status.NEW,10,"20/03/2023/11:00",2);
+                (Task.Type.SUBTASK,"Subtask","description", Task.Status.DONE,10,"20/03/2023/11:00",2);
         SubTask subTask1 = new SubTask
                 (Task.Type.SUBTASK,"Subtask1","description1", Task.Status.NEW,20,"20/03/2023/12:00",2);
         SubTask subTask2 = new SubTask
@@ -34,9 +34,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         fileman.createSubTask(subTask1);
         fileman.createSubTask(subTask2);
         System.out.println(fileman.getPrioritizedTasks());
-        /*fileman.getTaskById(1);
+        fileman.getTaskById(1);
         fileman.getEpicById(2);
-        fileman.getSubtaskById(3);
+        /*fileman.getSubtaskById(3);
         fileman.getSubtaskById(4);
         fileman.getSubtaskById(5);
         System.out.println(fileman.getHistory());
@@ -88,11 +88,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     if (type.equals(Task.Type.SUBTASK)) {
                         epicId = Integer.parseInt(dividedByComma[7]);
                     }
-                    //epicId = Integer.parseInt(dividedByComma[7]);
                     if (type.equals(Task.Type.EPIC)) {
                         endTime = LocalDateTime.parse(dividedByComma[7], Task.DATE_TIME_FORMATTER);
                     }
-                    //endTime = LocalDateTime.parse(dividedByComma[7], Task.DATE_TIME_FORMATTER);
 
                 }
                  setId(id);

@@ -1,13 +1,7 @@
-package manager.tests;
+package test.managers;
 
-import manager.InMemoryTaskManager;
 import manager.TaskManager;
-import org.junit.jupiter.api.BeforeEach;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import task.Epic;
-import task.SubTask;
-import task.Task;
 
 abstract class TaskManagerTest<T extends TaskManager> {
 
