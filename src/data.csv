@@ -1,7 +1,6 @@
-1,TASK,name,description,NEW,100,20/03/2023/18:59
-2,EPIC,name Epic,description Epic,IN_PROGRESS,30,20/03/2023/11:00,20/03/2023/12:20
-3,SUBTASK,Subtask,description,DONE,10,20/03/2023/11:00,2
-4,SUBTASK,Subtask1,description1,NEW,20,20/03/2023/12:00,2
+1,TASK,InMemoryTaskManagerTest,Task test,NEW,25,25/03/2023/12:00
+2,EPIC,InMemoryTaskManagerTest,test Epic,NEW,10,27/03/2023/18:05,27/03/2023/18:15
+4,EPIC,InMemoryTaskManagerTest,test Epic,NEW,20,26/03/2023/20:00,26/03/2023/20:20
+3,SUBTASK,InMemoryTaskManagerTest,test Subtask,NEW,10,27/03/2023/18:05,2
 
 
-1,2

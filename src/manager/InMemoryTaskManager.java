@@ -115,12 +115,17 @@ public class InMemoryTaskManager implements TaskManager {
     public void countEpicStartTime(int id) {
         List <LocalDateTime> startTime = new ArrayList<>();
         List<Integer> list = epicMap.get(id).getSubTaskIdList();
-        for (Integer i : list) {
-            startTime.add(subTaskMap.get(i).getStartTime());
+        if (list.size() == 1) {
+            epicMap.get(id).setStartTime(subTaskMap.get(list.get(0)).getStartTime());
+            return;
         }
-        epicMap.get(id).setStartTime(startTime.stream()
-               .filter(Objects::nonNull)
-               .min(Comparator.naturalOrder()).get());
+            for (Integer i : list) {
+                startTime.add(subTaskMap.get(i).getStartTime());
+            }
+            epicMap.get(id).setStartTime(startTime.stream()
+                    .filter(Objects::nonNull)
+                    .min(Comparator.naturalOrder()).get());
+
     }
 
     public void countEpicEndTime(int id) {
@@ -128,16 +133,21 @@ public class InMemoryTaskManager implements TaskManager {
             long duration = epicMap.get(id).getDuration();
             LocalDateTime endTime = epicMap.get(id).getStartTime().plusMinutes(duration);
             epicMap.get(id).setEndTimeForEpic(endTime);
-        } else {
+            return;
+        }
             List<SubTask> subTasks = new ArrayList<>();
             List<Integer> list = epicMap.get(id).getSubTaskIdList();
+            if (list.size() == 1) {
+                epicMap.get(id).setEndTimeForEpic(subTaskMap.get(list.get(0)).getEndTime());
+                return;
+            }
             for (Integer i : list) {
                 subTasks.add(subTaskMap.get(i));
             }
             epicMap.get(id).setEndTimeForEpic(subTasks.stream()
                     .filter(Objects::nonNull).map(Task::getEndTime)
                     .max(Comparator.naturalOrder()).get());
-        }
+
         /*List <LocalDateTime> endTime = new ArrayList<>();
         List<Integer> list = epicMap.get(id).getSubTaskIdList();
         for (Integer i : list) {
@@ -272,17 +282,29 @@ public class InMemoryTaskManager implements TaskManager {
                     && start.isBefore(taskToCompareWith.getEndTime())) {
                         isValid = false;
             }
+            if (start.equals(taskToCompareWith.getStartTime())
+                    || start.equals(taskToCompareWith.getEndTime())) {
+                isValid = false;
+            }
         }
         for (Task taskToCompareWith  : subTaskMap.values()) {
             if (start.isAfter(taskToCompareWith.getStartTime())
                     && start.isBefore(taskToCompareWith.getEndTime())) {
                         isValid = false;
             }
+            if (start.equals(taskToCompareWith.getStartTime())
+                    || start.equals(taskToCompareWith.getEndTime())) {
+                isValid = false;
+            }
         }
         for (Epic taskToCompareWith  : epicMap.values()) {
             if (start.isAfter(taskToCompareWith.getStartTime())
                     && start.isBefore(taskToCompareWith.getEndTimeForEpic())) {
                         isValid = false;
+            }
+            if (start.equals(taskToCompareWith.getStartTime())
+                    || start.equals(taskToCompareWith.getEndTime())) {
+                isValid = false;
             }
         }   return isValid;
     }
