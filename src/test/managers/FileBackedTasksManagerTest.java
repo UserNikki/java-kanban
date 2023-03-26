@@ -45,9 +45,6 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         assertEquals(testManager.getTaskById(1).toString(), task.toString(), "таски не равны");
         assertEquals(testManager.getEpicById(2).toString(), epic.toString(), "эпики не равны");
         assertEquals(testManager.getSubtaskById(3).toString(), subtask.toString(), "сабтаски не равны");
-//я так понимаю, что в данном случае проверяется одновременно и сохранение и загрузка обратно
-        //если я просто удалю задачи, негде будет срабатывать методу save(). Пустым файл никак не станет,
-        //останется лишь состояние на момент последнего срабатывания save() поэтому тест с пустой записью опускаю
     }
 
     @Test

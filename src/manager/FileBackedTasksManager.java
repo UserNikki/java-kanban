@@ -15,43 +15,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public FileBackedTasksManager(File file) {
         this.file = file;
     }
+    public FileBackedTasksManager() {}
 
-    public static void main(String[] args) {
-       FileBackedTasksManager fileman = new FileBackedTasksManager(new File(PATH));
-        Task task = new Task
-                (Task.Type.TASK,"name","description", Task.Status.NEW,100,"20/03/2023/18:59");
-        Epic epic = new Epic
-                (Task.Type.EPIC,"name Epic", "description Epic", Task.Status.NEW,90,"20/03/2023/07:00");
-        SubTask subTask = new SubTask
-                (Task.Type.SUBTASK,"Subtask","description", Task.Status.DONE,10,"20/03/2023/11:00",2);
-        SubTask subTask1 = new SubTask
-                (Task.Type.SUBTASK,"Subtask1","description1", Task.Status.NEW,20,"20/03/2023/12:00",2);
-        SubTask subTask2 = new SubTask
-                (Task.Type.SUBTASK,"Subtask2","description2", Task.Status.NEW,30,"20/03/2023/19:00",2);
-        fileman.createTask(task);
-        fileman.createEpic(epic);
-        fileman.createSubTask(subTask);
-        fileman.createSubTask(subTask1);
-        fileman.createSubTask(subTask2);
-        System.out.println(fileman.getPrioritizedTasks());
-        fileman.getTaskById(1);
-        fileman.getEpicById(2);
-        /*fileman.getSubtaskById(3);
-        fileman.getSubtaskById(4);
-        fileman.getSubtaskById(5);
-        System.out.println(fileman.getHistory());
-        System.out.println(fileman.getAllTasks());
-        System.out.println(fileman.getAllEpics());
-        System.out.println(fileman.getAllSubtasks());*/
-
-        /*FileBackedTasksManager fileman1 = loadFromFile(new File(PATH));
-        System.out.println(fileman1.getHistory());
-        System.out.println(fileman1.getAllTasks());
-        System.out.println(fileman1.getAllEpics());
-        System.out.println(fileman1.getAllSubtasks());*/
-
-    }
-    private void save() {
+    protected void save() {
         try (FileWriter fileWriter = new FileWriter(
                 PATH, false)) {
 
