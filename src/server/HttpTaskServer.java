@@ -42,7 +42,7 @@ public class HttpTaskServer {
         this.httpServer = HttpServer.create();
         this.manager = Managers.getFileManager(new File("src/data.csv"));
         httpServer.bind(new InetSocketAddress(8080), 0);
-        httpServer.createContext("/tasks", new TaskHandler());
+        httpServer.createContext("/tasks", new AllTasksHandler());
         httpServer.createContext("/tasks/task", new TaskHandler());
         httpServer.createContext("/tasks/epic", new EpicHandler());
         httpServer.createContext("/tasks/subtask", new SubtaskHandler());
@@ -86,6 +86,31 @@ public class HttpTaskServer {
         server.getManager().createSubTask(subTask2);
         server.getManager().getTaskById(1);
         server.getManager().getSubtaskById(4);
+    }
+
+    class AllTasksHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange httpExchange) throws IOException, NullPointerException {
+            System.out.println("Началась обработка AllTasksHandler.");
+            String[] path = httpExchange.getRequestURI().getPath().split("/");
+            String endPoint = path[path.length - 1];
+            if (endPoint.equals("tasks")) {
+                List<Task> tasks = new ArrayList<>(manager.taskMap.values());
+                tasks.addAll(manager.epicMap.values());
+                tasks.addAll(manager.subTaskMap.values());
+                String response = GSON.toJson(tasks);
+                httpExchange.sendResponseHeaders(200, 0);
+                try (OutputStream os = httpExchange.getResponseBody()) {
+                    os.write(response.getBytes());
+                }
+            } else {
+                String response = "Ошибка в обработке запроса";
+                httpExchange.sendResponseHeaders(400, 0);
+                try (OutputStream os = httpExchange.getResponseBody()) {
+                    os.write(response.getBytes());
+                }
+            }
+        }
     }
 
     class TaskHandler implements HttpHandler {

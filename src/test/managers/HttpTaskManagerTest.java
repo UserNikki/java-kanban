@@ -17,6 +17,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,16 +29,27 @@ class HttpTaskManagerTest {
     private KVServer kvServer;
     Gson gson = HttpTaskServer.GSON;
 
-    /*  ПООТДЕЛЬНОСТИ ВСЕ РАБОТАЮТ. ВМЕСТЕ Я НЕ ПОНИМАЮ ЧТО ИМ НУЖНО.
-    В ИНСОМНИИ ВСЕ РАБОТАЕТ, ЗДЕСЬ НЕ МОГУ НАСТРОИТЬ НОРМАЛЬНО, ЕСЛИ НЕ СЛОЖНО ТО ПО ОТДЕЛЬНОСТИ ЗАПУСКАЙ
+    /*  ПООТДЕЛЬНОСТИ ВСЕ РАБОТАЮТ.ЧЕРЕЗ ИНСОМНИА РАБОТАЕТ ВСЕ ХЕНДЛЕРЫ И ЭНДПОЙНТЫ e.t.c. ЗДЕСЬ В ТЕСТАХ ВМЕСТЕ Я НЕ ПОНИМАЮ ЧТО ИМ НУЖНО.
+    ЗДЕСЬ НЕ МОГУ НАСТРОИТЬ НОРМАЛЬНО, ЕСЛИ НЕ СЛОЖНО ТО ПО ОТДЕЛЬНОСТИ ЗАПУСКАЙ
     И СМОТРИ ЧТОБЫ ДАННЫЕ В ФАЙЛЕ "src/data.csv" БЫЛИ КОРРЕКТНЫМИ, ЕСЛИ ТЕСТ НЕ РАБОТАЕТ ОЧИСТИ ФАЙЛ И
      ЗАПУСТИ МЕЙН В HttpTaskServer КЛАССЕ ЧТОБЫ ЗАГРУЗИЛОСЬ. ЕСТЬ БЛУЖДАЮЩИЙ БАГ, Я ВООБЩЕ НЕ ПОНИМАЮ ГДЕ ЕГО ИСКАТЬ
+     Т.К. С ВИДУ В КОДЕ ВСЕ НОРМ И ИСПОЛЬЗУЮТСЯ ОДНИ И ТЕ ЖЕ ЦЕПОЧКИ МЕТОДОВ.
      А ПЕРЕПИСЫВАТЬ ВСЕ ЗАНОВО УЖЕ ВСЕ, ВРЕМЕНИ НЕТ. СДАЮСЬ.ВСЕ ЧТО МОГ СДЕЛАЛ. СЛИШКОМ МНОГО ВСЕГО С ДЖСОН, АДАПТЕРАМИ
      И Т.Д. ТОЛКОМ НЕ ИЗУЧАЛИ И СРАЗУ ВОТ В ЭТО ВСЕ ЗА 2 НЕДЕЛИ ПОПРОБУЙ ПЕРЕВАРИ ГОВОРЯТ.
-     ЕСЛИ ЧТО ПРИДУМАЮ ДОЗАКИНУ, ПУШУ ПОТОМУ ЧТО ВРЕМЯ ВСЕ
+     ЕСЛИ ЧТО ПРИДУМАЮ ДОЗАКИНУ, ДЕЛАЮ ПУШ ПОТОМУ ЧТО ВРЕМЯ ВСЕ
+            для инсомния если что:
+    все вообще http://localhost:8080/tasks
+    все задачи http://localhost:8080/tasks/task
+    все эпики  http://localhost:8080/tasks/epic
+    все сабы   http://localhost:8080/tasks/subtask
+    история http://localhost:8080/history
+    все что по айди :
+    http://localhost:8080/tasks/task/?id=1
+    http://localhost:8080/tasks/epic/?id=3
+    http://localhost:8080/tasks/subtask/?id=4
      */
 
-    private void createTestData(HttpTaskManager httpTaskManager) {
+    private void createTestData(HttpTaskManager httpTaskManager) {//все айди с 1 по 6 в порядке создания
         Task task = new Task
                 (Task.Type.TASK,"name","description", Task.Status.NEW,100,"26/03/2023/11:59");
         Task task1 = new Task
@@ -77,6 +90,23 @@ class HttpTaskManagerTest {
     }
 
     @Test
+    void shouldReturnAllTasksIncludingEpicsAndSubtasksTest() {
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            List<Task> tasks = new ArrayList<>(manager.taskMap.values());
+            tasks.addAll(manager.epicMap.values());
+            tasks.addAll(manager.subTaskMap.values());
+            String test = gson.toJson(tasks);
+            assertEquals(test, response.body());
+        } catch (IOException | InterruptedException e) {
+            e.getStackTrace();
+        }
+    }
+
+    @Test
     void shouldGetAllTasksTest() {
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/task");
@@ -97,8 +127,6 @@ class HttpTaskManagerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("KURWA" + gson.toJson(manager.epicMap.values()));
-            System.out.println("KURWA" + response.body());
             assertEquals(gson.toJson(manager.epicMap.values()), response.body());
         } catch (IOException | InterruptedException e) {
             e.getStackTrace();
@@ -112,8 +140,6 @@ class HttpTaskManagerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("KURWA" + gson.toJson(manager.subTaskMap.values()));
-            System.out.println("KURWA" + response.body());
             assertEquals(gson.toJson(manager.subTaskMap.values()), response.body());
         } catch (IOException | InterruptedException e) {
             e.getStackTrace();
