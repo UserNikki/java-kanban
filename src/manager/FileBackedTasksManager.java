@@ -126,7 +126,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return manager;
         }
 
-    static String historyToString(HistoryManager manager) {
+    protected static String historyToString(HistoryManager manager) {
         List<Task> history = manager.getHistory();
         List<String> id = new ArrayList<>();
             for (Task task : history) {
@@ -139,7 +139,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 .replace(" ", "");
     }
 
-     static List<Integer> historyFromString(String value) {
+     protected static List<Integer> historyFromString(String value) {
          String[] values = value.split(",");
          return Arrays.stream(values)
                  .filter(v -> !v.isEmpty())
@@ -257,6 +257,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         super.updateSubtask(subtaskId,subtask);
         save();
         return subtask;
+    }
+
+    @Override
+    public String getAllTasks() {
+        return super.getAllTasks();
     }
     @Override
     public boolean timeValidator(Task task) {

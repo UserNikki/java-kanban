@@ -1,20 +1,15 @@
 package manager;
 import task.Epic;
-import task.Node;
 import task.SubTask;
 import task.Task;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 public class InMemoryTaskManager implements TaskManager {
-    protected Map<Integer,Task> taskMap = new HashMap<>();
-    protected Map<Integer,Epic> epicMap = new HashMap<>();
-    protected Map<Integer, SubTask> subTaskMap = new HashMap<>();
+    public Map<Integer,Task> taskMap = new HashMap<>();
+    public Map<Integer,Epic> epicMap = new HashMap<>();
+    public Map<Integer, SubTask> subTaskMap = new HashMap<>();
     private final Comparator<Task> comparator = Comparator.comparing(Task::getStartTime);
     protected Set<Task> taskSet = new TreeSet<>(comparator);
     private int id = 1;

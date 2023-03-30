@@ -1,9 +1,11 @@
-package manager;
+package server;
 
 import com.google.gson.*;
+import manager.FileBackedTasksManager;
 import task.Epic;
 import task.SubTask;
 import task.Task;
+
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,22 +20,21 @@ public class HttpTaskManager extends FileBackedTasksManager {
     protected KVTaskClient clientKV;
     private static Gson gson;
 
-    public HttpTaskManager(URI uri) {
+    public HttpTaskManager(String url) {
         super();
         taskKey = "task";
         epicKey = "epic";
         subtaskKey = "subtask";
         historyKey = "history";
-        clientKV = new KVTaskClient();
+        clientKV = new KVTaskClient(URI.create(url));
         gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new HttpTaskServer.LocalDateTimeAdapter())
                 .serializeNulls()
                 .create();
-
     }
 
     @Override
-    public void save() {//робит
+    public void save() {
         if (!taskMap.isEmpty()) {
             List<Task> tasks = new ArrayList<>(taskMap.values());
             String valueTasks = gson.toJson(tasks);
@@ -50,6 +51,52 @@ public class HttpTaskManager extends FileBackedTasksManager {
             clientKV.putData(subtaskKey,valueSubtasks);
         }
         clientKV.putData(historyKey, historyToString(historyManager));
+    }
+
+    public static HttpTaskManager loadFromServer(String url) {
+        HttpTaskManager manager = new HttpTaskManager(url);
+        JsonArray taskArray = JsonParser.parseString(manager.getClientKV()
+                .load(manager.getTaskKey())).getAsJsonArray();
+        if (taskArray != null) {
+            for (JsonElement task : taskArray) {
+                Task taskFromJson = gson.fromJson(task, Task.class);
+                int id = taskFromJson.getTaskId();
+                manager.taskMap.put(id, taskFromJson);
+            }
+        }
+            JsonArray epicArray = JsonParser.parseString(manager.getClientKV()
+                    .load(manager.getEpicKey())).getAsJsonArray();
+            if (epicArray != null) {
+                for (JsonElement epic : epicArray) {
+                    Epic epicFromJson = gson.fromJson(epic, Epic.class);
+                    int id = epicFromJson.getTaskId();
+                    manager.epicMap.put(id, epicFromJson);
+                }
+            }
+        JsonArray subtaskArray = JsonParser.parseString(manager.getClientKV()
+                .load(manager.getSubtaskKey())).getAsJsonArray();
+        if (subtaskArray != null) {
+            for (JsonElement subtask : subtaskArray) {
+                SubTask subtaskFromJson = gson.fromJson(subtask, SubTask.class);
+                int id = subtaskFromJson.getTaskId();
+                manager.subTaskMap.put(id, subtaskFromJson);
+            }
+        }
+        List<Integer> list = new ArrayList<>(historyFromString(manager.getClientKV()
+                .load(manager.getHistoryKey())));
+        for (Integer id : list) {
+            if (manager.taskMap.containsKey(id)) {
+                manager.historyManager.add(manager.taskMap.get(id));
+            }
+            if (manager.epicMap.containsKey(id)) {
+                manager.historyManager.add(manager.epicMap.get(id));
+            }
+            if (manager.subTaskMap.containsKey(id)) {
+                manager.historyManager.add(manager.subTaskMap.get(id));
+            }
+        }
+
+        return manager;
     }
 
 

@@ -1,9 +1,9 @@
 1,TASK,name,description,NEW,100,26/03/2023/11:59
 2,TASK,name1,description1,NEW,55,25/03/2023/18:59
-3,EPIC,name Epic,description Epic,NEW,10,20/03/2023/07:00,20/03/2023/07:10
-4,SUBTASK,Subtask,description,NEW,15,20/03/2023/11:00,2
-5,SUBTASK,Subtask1,description1,NEW,20,20/03/2023/12:00,2
-6,SUBTASK,Subtask2,description2,NEW,30,20/03/2023/18:00,2
+3,EPIC,name Epic,description Epic,NEW,65,20/03/2023/11:00,20/03/2023/18:30
+4,SUBTASK,Subtask,description,NEW,15,20/03/2023/11:00,3
+5,SUBTASK,Subtask1,description1,NEW,20,20/03/2023/12:00,3
+6,SUBTASK,Subtask2,description2,NEW,30,20/03/2023/18:00,3
 
 
-1
+1,4

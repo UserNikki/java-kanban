@@ -1,4 +1,4 @@
-package manager;
+package server;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -27,6 +27,7 @@ public class KVServer {
         server.createContext("/save", this::save);
         server.createContext("/load", this::load);
     }
+
 
     private void load(HttpExchange h) throws IOException {
         // TODO Добавьте получение значения по ключу
@@ -106,6 +107,9 @@ public class KVServer {
         System.out.println("Открой в браузере http://localhost:" + PORT + "/");
         System.out.println("API_TOKEN: " + apiToken);
         server.start();
+    }
+    public void stop() {
+        server.stop(1);
     }
 
     private String generateApiToken() {

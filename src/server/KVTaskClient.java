@@ -1,6 +1,6 @@
-package manager;
-
+package server;
 import com.google.gson.*;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,22 +10,23 @@ import java.time.LocalDateTime;
 
 
 public class KVTaskClient {
+    URI url;
 
-    private Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, new HttpTaskServer.LocalDateTimeAdapter())
-            .serializeNulls()
-            .create();
+    public URI getUrl() {
+        return url;
+    }
+
     public String token;
 
-    public KVTaskClient() {
+    public KVTaskClient(URI url) {
         generateToken();
     }
-    public String generateToken() {
+    private String generateToken() {
         String body = null;
-        URI uri = URI.create("http://localhost:8078/register");
+        URI url = URI.create("http://localhost:8078/register");
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(uri)
+                    .uri(url)
                     .GET()
                     .build();
             HttpClient client = HttpClient.newHttpClient();
@@ -35,13 +36,12 @@ public class KVTaskClient {
                 body = response.body();
             }
         } catch (IOException | InterruptedException | NullPointerException e) {
-            System.out.println("Во время выполнения запроса ресурса по URL-адресу: '" + uri + "', возникла ошибка.");
+            System.out.println("Во время выполнения запроса ресурса по URL-адресу /register возникла ошибка.");
         }
         return this.token = body;
     }
 
     public void putData(String key, String value) {
-
         URI uri = URI.create("http://localhost:8078/save/" + key + "?API_TOKEN=" + getToken());
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -55,7 +55,7 @@ public class KVTaskClient {
                 System.out.println("Ошибка метод putData code: " + response.statusCode());
             }
         } catch (IOException | InterruptedException | NullPointerException e) {
-            System.out.println("Во время выполнения запроса ресурса по URL-адресу: '" + uri + "', возникла ошибка.");
+            System.out.println("Во время выполнения запроса ресурса по URL-адресу /save возникла ошибка.");
         }
     }
 
@@ -76,7 +76,7 @@ public class KVTaskClient {
             return response.body();
 
         } catch (IOException | InterruptedException | NullPointerException e) {
-            System.out.println("Во время выполнения запроса ресурса  возникла ошибка.");
+            System.out.println("Во время выполнения запроса ресурса /load возникла ошибка.");
         }
         return null;
     }
