@@ -3,6 +3,7 @@ import com.google.gson.*;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -18,15 +19,16 @@ public class KVTaskClient {
 
     public String token;
 
-    public KVTaskClient(URI url) {
-        generateToken();
+    public KVTaskClient(String url) {
+        generateToken(url);
     }
-    private String generateToken() {
+    private String generateToken(String url) {
         String body = null;
-        URI url = URI.create("http://localhost:8078/register");
+        //URI url = URI.create("http://localhost:8078/register");
+
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(url)
+                    .uri(URI.create(url))
                     .GET()
                     .build();
             HttpClient client = HttpClient.newHttpClient();

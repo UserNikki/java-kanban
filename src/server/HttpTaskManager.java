@@ -26,7 +26,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         epicKey = "epic";
         subtaskKey = "subtask";
         historyKey = "history";
-        clientKV = new KVTaskClient(URI.create(url));
+        clientKV = new KVTaskClient(url);
         gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new HttpTaskServer.LocalDateTimeAdapter())
                 .serializeNulls()

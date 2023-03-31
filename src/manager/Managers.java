@@ -1,10 +1,12 @@
 package manager;
+import server.HttpTaskManager;
+
 import java.io.File;
 
 public class Managers {
 
     public static TaskManager getDefault() {
-        return new InMemoryTaskManager();
+        return new HttpTaskManager("http://localhost:8080/");
     }
 
     public static HistoryManager getDefaultHistory() {

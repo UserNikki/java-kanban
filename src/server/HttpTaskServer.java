@@ -41,7 +41,7 @@ public class HttpTaskServer {
     public void launchServer() throws IOException {
         this.httpServer = HttpServer.create();
         this.manager = Managers.getFileManager(new File("src/data.csv"));
-        httpServer.bind(new InetSocketAddress(8080), 0);
+        httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new AllTasksHandler());
         httpServer.createContext("/tasks/task", new TaskHandler());
         httpServer.createContext("/tasks/epic", new EpicHandler());
@@ -62,8 +62,10 @@ public class HttpTaskServer {
         //отдельный запуск апи для проверки
         //в классе мейн отдельный мейн для проверки клиент-валью
 
+
         HttpTaskServer server = new HttpTaskServer();
         server.launchServer();
+        FileBackedTasksManager manager = server.getManager();
 
         Task task = new Task
                 (Task.Type.TASK,"name","description", Task.Status.NEW,100,"26/03/2023/11:59");
@@ -78,19 +80,20 @@ public class HttpTaskServer {
         SubTask subTask2 = new SubTask
                 (Task.Type.SUBTASK,"Subtask2","description2", Task.Status.NEW,30,"20/03/2023/18:00",3);
 
-        server.getManager().createTask(task);
-        server.getManager().createTask(task1);
-        server.getManager().createEpic(epic);
-        server.getManager().createSubTask(subTask);
-        server.getManager().createSubTask(subTask1);
-        server.getManager().createSubTask(subTask2);
-        server.getManager().getTaskById(1);
-        server.getManager().getSubtaskById(4);
+        manager.createTask(task);
+        manager.createTask(task1);
+        manager.createEpic(epic);
+        manager.createSubTask(subTask);
+        manager.createSubTask(subTask1);
+        manager.createSubTask(subTask2);
+        manager.getTaskById(1);
+        manager.getSubtaskById(4);
+
     }
 
     class AllTasksHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange httpExchange) throws IOException, NullPointerException {
+        public void handle(HttpExchange httpExchange) throws IOException {
             System.out.println("Началась обработка AllTasksHandler.");
             String[] path = httpExchange.getRequestURI().getPath().split("/");
             String endPoint = path[path.length - 1];
@@ -115,7 +118,7 @@ public class HttpTaskServer {
 
     class TaskHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange httpExchange) throws IOException, NullPointerException {
+        public void handle(HttpExchange httpExchange) throws IOException {
             System.out.println("Началась обработка TaskHandler.");
             String requestMethod = httpExchange.getRequestMethod();
             String[] path = httpExchange.getRequestURI().getPath().split("/");
