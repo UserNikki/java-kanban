@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import manager.FileBackedTasksManager;
+import manager.HistoryManager;
 import manager.Managers;
 import task.Epic;
 import task.SubTask;
@@ -88,6 +89,7 @@ public class HttpTaskServer {
         manager.createSubTask(subTask2);
         manager.getTaskById(1);
         manager.getSubtaskById(4);
+
 
     }
 
@@ -486,7 +488,7 @@ public class HttpTaskServer {
             String endPoint = path[path.length - 1];
             if (requestMethod.equals("GET")) {
                 if (endPoint.equals("history")) {
-                    List<Task> historyList = manager.getHistory().getHistory();
+                    List<Task> historyList = new ArrayList<>(manager.getHistory().getHistory());
                     if (historyList.isEmpty()) {
                         String response = "history is empty";
                         httpExchange.sendResponseHeaders(400, 0);

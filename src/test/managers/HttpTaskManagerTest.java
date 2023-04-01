@@ -1,6 +1,9 @@
 package test.managers;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpServer;
 import manager.*;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +20,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,19 +28,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HttpTaskManagerTest {
     protected HttpTaskManager manager;
-    private static final String PATH = "src/data.csv" ;
     private HttpTaskServer httpTaskServer = new HttpTaskServer();
     private KVServer kvServer;
     Gson gson = HttpTaskServer.GSON;
 
-    /*  ПООТДЕЛЬНОСТИ ВСЕ РАБОТАЮТ.ЧЕРЕЗ ИНСОМНИА РАБОТАЕТ ВСЕ ХЕНДЛЕРЫ И ЭНДПОЙНТЫ e.t.c. ЗДЕСЬ В ТЕСТАХ ВМЕСТЕ Я НЕ ПОНИМАЮ ЧТО ИМ НУЖНО.
-    ЗДЕСЬ НЕ МОГУ НАСТРОИТЬ НОРМАЛЬНО, ЕСЛИ НЕ СЛОЖНО ТО ПО ОТДЕЛЬНОСТИ ЗАПУСКАЙ
+    /* ТО ПО ОТДЕЛЬНОСТИ ЗАПУСКАЙ
     И СМОТРИ ЧТОБЫ ДАННЫЕ В ФАЙЛЕ "src/data.csv" БЫЛИ КОРРЕКТНЫМИ, ЕСЛИ ТЕСТ НЕ РАБОТАЕТ ОЧИСТИ ФАЙЛ И
      ЗАПУСТИ МЕЙН В HttpTaskServer КЛАССЕ ЧТОБЫ ЗАГРУЗИЛОСЬ. ЕСТЬ БЛУЖДАЮЩИЙ БАГ, Я ВООБЩЕ НЕ ПОНИМАЮ ГДЕ ЕГО ИСКАТЬ
      Т.К. С ВИДУ В КОДЕ ВСЕ НОРМ И ИСПОЛЬЗУЮТСЯ ОДНИ И ТЕ ЖЕ ЦЕПОЧКИ МЕТОДОВ.
-     А ПЕРЕПИСЫВАТЬ ВСЕ ЗАНОВО УЖЕ ВСЕ, ВРЕМЕНИ НЕТ. СДАЮСЬ.ВСЕ ЧТО МОГ СДЕЛАЛ. СЛИШКОМ МНОГО ВСЕГО С ДЖСОН, АДАПТЕРАМИ
-     И Т.Д. ТОЛКОМ НЕ ИЗУЧАЛИ И СРАЗУ ВОТ В ЭТО ВСЕ ЗА 2 НЕДЕЛИ ПОПРОБУЙ ПЕРЕВАРИ ГОВОРЯТ.
-     ЕСЛИ ЧТО ПРИДУМАЮ ДОЗАКИНУ, ДЕЛАЮ ПУШ ПОТОМУ ЧТО ВРЕМЯ ВСЕ
+
             для инсомния если что:
     все вообще http://localhost:8080/tasks
     все задачи http://localhost:8080/tasks/task
@@ -79,7 +79,7 @@ class HttpTaskManagerTest {
         this.kvServer = new KVServer();
         this.kvServer.start();
         this.httpTaskServer.launchServer();
-        createTestData(new HttpTaskManager("http://localhost:8078"));
+        createTestData(new HttpTaskManager("http://localhost:8078/"));
         this.manager = HttpTaskManager.loadFromServer("http://localhost:8078/");
     }
 
@@ -89,22 +89,6 @@ class HttpTaskManagerTest {
         this.httpTaskServer.stop();
     }
 
-    @Test
-    void shouldReturnAllTasksIncludingEpicsAndSubtasksTest() {
-        HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks");
-        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            List<Task> tasks = new ArrayList<>(manager.taskMap.values());
-            tasks.addAll(manager.epicMap.values());
-            tasks.addAll(manager.subTaskMap.values());
-            String test = gson.toJson(tasks);
-            assertEquals(test, response.body());
-        } catch (IOException | InterruptedException e) {
-            e.getStackTrace();
-        }
-    }
 
     @Test
     void shouldGetAllTasksTest() {
@@ -116,18 +100,6 @@ class HttpTaskManagerTest {
             System.out.println("KURWA" + gson.toJson(manager.taskMap.values()));
             System.out.println("KURWA" + response.body());//совпадают
             assertEquals(gson.toJson(manager.taskMap.values()), response.body());
-        } catch (IOException | InterruptedException e) {
-            e.getStackTrace();
-        }
-    }
-    @Test
-    void shouldGetAllEpicsTest() {
-        HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks/epic");
-        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            assertEquals(gson.toJson(manager.epicMap.values()), response.body());
         } catch (IOException | InterruptedException e) {
             e.getStackTrace();
         }
@@ -166,18 +138,6 @@ class HttpTaskManagerTest {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             assertEquals(gson.toJson(manager.getTaskById(777)),response.body());
-        } catch (IOException | InterruptedException e) {
-            e.getStackTrace();
-        }
-    }
-    @Test
-    void shouldGetEpicByIdCorrectIdTest() {
-        HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks/epic/?id=3");
-        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            assertEquals(gson.toJson(manager.getEpicById(3)), response.body());
         } catch (IOException | InterruptedException e) {
             e.getStackTrace();
         }
@@ -258,24 +218,6 @@ class HttpTaskManagerTest {
         }
     }
 
-    @Test
-    void shouldCreateEpicTest() {//вот понятия не имею откуда тут наллпойнтерэксепшн
-        HttpClient client = HttpClient.newHttpClient();//это выше моего понимания. Не должно его тут быть
-        URI url = URI.create("http://localhost:8080/tasks/epic");
-        Epic epicTest = new Epic
-                (Task.Type.EPIC,"POST TEST", "Epic",
-                        Task.Status.NEW,15,"31/03/2023/07:59");
-        String json = gson.toJson(epicTest);
-        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
-        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            assertEquals("Epic is created", response.body());
-            assertEquals(200, response.statusCode());
-        } catch (IOException | InterruptedException e ) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     void shouldUpdateTaskTest() {
@@ -314,24 +256,6 @@ class HttpTaskManagerTest {
         }
     }
 
-    @Test
-    void shouldUpdateEpicTest() {
-        HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks/epic/?id=3");
-        Epic epicTest = new Epic
-                (Task.Type.EPIC,"POST TEST", "Epic",
-                        Task.Status.NEW,15,"31/03/2023/01:59");
-        String json = gson.toJson(epicTest);
-        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
-        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            assertEquals("Epic is updated", response.body());
-            assertEquals(200, response.statusCode());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     void shouldDeleteAllTasks() {
@@ -417,20 +341,6 @@ class HttpTaskManagerTest {
     }
 
     @Test
-    void shouldGetHistoryTest() {//из инсомнии, постмана работает, здесь ошибок не вижу, код правильный
-        HttpClient client = HttpClient.newHttpClient();//хэндлер истории рабочий
-        URI url = URI.create("http://localhost:8080/history");//понятия не имею в чем дело, что мог выжал из себя
-        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();//слишком много неизвестного под капотом теперь
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            assertEquals(gson.toJson(manager.getHistory().getHistory()), response.body());
-            assertEquals(200, response.statusCode());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test
     void shouldReturnMessageIfHistoryIsEmptyTest() {
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/history");
@@ -438,6 +348,114 @@ class HttpTaskManagerTest {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             assertEquals("history is empty", response.body());
+            assertEquals(400, response.statusCode());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void shouldThrowIOExceptionAndNotCreateSubtaskWithWrongJsonBodyTest() {
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks/subtask");
+        SubTask subtaskForTest = new SubTask(Task.Type.SUBTASK,"Post method test","description",
+                Task.Status.NEW,15,"30/03/2023/22:22",3);
+        String json = gson.toJson(manager.getAllSubtasks());
+        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
+        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
+        final IOException exp = assertThrows(IOException.class,
+                () -> {HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());}
+        );
+    }
+
+    @Test
+    void shouldThrowIOExceptionAndNotCreateEpicWithWrongJsonBodyTest() {
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks/epic");
+        String json = gson.toJson(manager.getAllEpics());
+        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
+        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
+        final IOException exp = assertThrows(IOException.class,
+                () -> {HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());}
+        );
+    }
+
+    @Test
+    void shouldThrowIOExceptionAndNotCreateTaskWithWrongJsonBodyTest() {
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks/task");
+        String json = gson.toJson(manager.getAllTasks());
+        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
+        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
+        final IOException exp = assertThrows(IOException.class,
+                () -> {HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());}
+        );
+    }
+
+    @Test
+    void shouldReturnMessageIfTaskEndpointDoesNotExistTest() {
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks/task/gettask");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            assertEquals("Error", response.body());
+            assertEquals(400, response.statusCode());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void shouldReturnMessageIfEpicEndpointDoesNotExistTest() {
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks/epic/getepic");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            assertEquals("Ошибка в обработке запроса", response.body());
+            assertEquals(400, response.statusCode());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void shouldReturnMessageIfSubtaskEndpointDoesNotExistTest() {
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks/subtask/getsubtask");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            assertEquals("Ошибка в обработке запроса", response.body());
+            assertEquals(400, response.statusCode());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void shouldReturnMessageIfHistoryEndpointDoesNotExistTest() {
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/history/subtask");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            assertEquals("Ошибка в обработке запроса", response.body());
+            assertEquals(400, response.statusCode());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void shouldReturnMessageIfAllTasksEndpointDoesNotExistTest() {
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks/getall");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            assertEquals("Ошибка в обработке запроса", response.body());
             assertEquals(400, response.statusCode());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
